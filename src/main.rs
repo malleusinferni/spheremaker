@@ -161,7 +161,24 @@ fn main() {
                 WindowEvent::CloseRequested => running = false,
 
                 WindowEvent::KeyboardInput { input, .. } => {
-                    let KeyboardInput { virtual_keycode, .. } = input;
+                    let KeyboardInput {
+                        virtual_keycode,
+                        modifiers,
+                        state,
+                        ..
+                    } = input;
+
+                    use glutin::ElementState;
+
+                    match state {
+                        ElementState::Pressed => (),
+                        _ => return,
+                    }
+
+                    if modifiers.shift { return; }
+                    if modifiers.ctrl { return; }
+                    if modifiers.alt { return; }
+                    if modifiers.logo { return; }
 
                     let key = match virtual_keycode {
                         Some(key) => key,
@@ -176,8 +193,8 @@ fn main() {
                         Q => running = false,
                         A => locals.highest_dim += step,
                         Z => locals.highest_dim -= step,
-                        S => locals.lacunarity -= step,
-                        X => locals.lacunarity += step,
+                        S => locals.lacunarity += step,
+                        X => locals.lacunarity -= step,
                         D => locals.octaves += step,
                         C => locals.octaves -= step,
                         F => locals.offset += step,
