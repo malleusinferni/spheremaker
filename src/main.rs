@@ -133,11 +133,11 @@ fn main() {
 
     let mut running = true;
 
-    let highest_dim = 1.0;
-    let lacunarity = 2.0;
+    let highest_dim = 0.0;
+    let lacunarity = 2.5;
     let octaves = 10.0;
-    let offset = 0.0;
-    let gain = 1.0;
+    let offset = -0.625;
+    let gain = 10.0;
 
     let transform = [[0.0; 4]; 4];
 
