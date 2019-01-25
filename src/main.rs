@@ -48,7 +48,7 @@ pub struct Mesh {
 }
 
 impl Mesh {
-    pub fn new() -> Self {
+    pub fn new_icosphere() -> Self {
         use genmesh::generators::*;
 
         let sphere = IcoSphere::subdivide(4);
@@ -63,6 +63,36 @@ impl Mesh {
 
         let index_data = sphere.indexed_polygon_iter().flat_map(|t| {
             [t.x, t.y, t.z].to_vec().into_iter()
+        }).map(|u| u as u16).collect();
+
+        Self { vertex_data, index_data }
+    }
+
+    pub fn new_plane() -> Self {
+        use genmesh::generators::*;
+
+        use palette::*;
+
+        let plane = Plane::new();
+
+        let color_count = plane.shared_vertex_iter().count();
+
+        let colors = (0 .. color_count).map(|i| {
+            let hue = i as f32 / color_count as f32;
+            let hsv = Hsv::new(hue, 1.0, 1.0);
+            let (r, g, b) = Srgb::from(hsv).into_components();
+            [r, g, b]
+        });
+
+        let vertex_data = plane.shared_vertex_iter()
+            .zip(colors)
+            .map(|(v, color)| {
+                let pos: [f32; 3] = v.pos.into();
+                Vertex { pos, color }
+            }).collect();
+
+        let index_data = plane.indexed_polygon_iter().flat_map(|t| {
+            vec![t.x, t.y, t.z, t.w].into_iter()
         }).map(|u| u as u16).collect();
 
         Self { vertex_data, index_data }
@@ -97,7 +127,7 @@ fn main() {
 
     let pso = factory.create_pipeline_simple(&vert_src, &frag_src, pipe::new()).expect("Failed to init pipeline shader object");
 
-    let mesh = Mesh::new();
+    let mesh = Mesh::new_plane(); //Mesh::new_icosphere();
 
     let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(
         mesh.vertex_data.as_slice(),
