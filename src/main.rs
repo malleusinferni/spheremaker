@@ -114,10 +114,19 @@ impl QuadMesh {
             [my(0.0), my(90.0), my(180.0), my(270.0), mx(90.0), mx(270.0)]
         };
 
-        let color = [1.0; 3];
+        let colors = [
+            [1.0, 0.3, 0.3],
+            [0.3, 1.0, 0.3],
+            [0.3, 0.3, 1.0],
+            [1.0, 1.0, 0.3],
+            [1.0, 0.3, 1.0],
+            [0.3, 1.0, 1.0],
+        ];
 
         let quads = rotations.iter().enumerate().map(|(layer, &matrix)| {
             let tex_layer = layer as u16;
+
+            let color = colors[layer];
 
             let vertex = |i: usize| {
                 let pos = matrix.transform_vector(proto[i]).into();
